@@ -9,6 +9,11 @@ def Start():
 
 @app.route('/', )
 def FL():
+    print('Hi')
+    f = open('txt.txt', 'w')
+    for arg in request.args:
+        fr = request.args.get(arg[0])
+        print(fr)
     return 'Hi, Mark'
 
 
