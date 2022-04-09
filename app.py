@@ -47,6 +47,16 @@ def signal():
     #On - посылает уведомление на телефон владельца, если не отреагировал спустя минуту-две - вызов ЧОП,
     #Sleep - моментальный вызов ЧОП и уведомление владельцу.
 
+@app.route('/')
+def outDB():
+        db_connection = sqlite3.connect('db/ecliptic.db')
+        cur = db_connection.cursor()
+        res = cur.execute('SELECT * FROM owner').fetchall()
+        res = ' '.join(map(str, res))
+        db_connection.close()
+        return res
+
+
 db_connection = sqlite3.connect('db/ecliptic.db')
 cur = db_connection.cursor()
 
