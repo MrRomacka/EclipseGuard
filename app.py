@@ -5,8 +5,7 @@ import base64
 
 d = {'click': 'On', 'double_click': 'Off', 'long_press': 'Sleep Mode'}
 
-def changeStatus(device, action):
-    global cur
+def changeStatus(device, action, cur):
     global d
     cur.execute(f'UPDATE owner SET status = {d[action]} where device = {device}')
 
@@ -31,11 +30,15 @@ def FL():
     telemetry = js['telemetry']
     firstButton = telemetry['firstButton']
     status = firstButton['status']
+    db_connection = sqlite3.connect('db/ecliptic.db')
+    cur = db_connection.cursor()
     if js[deviceName] not in cur.execute('SELECT device FROM owner'):
         cur.execute(f'INSERT INTO owner (device, owner, status) VALUES ({js[serialNumber]}, {js[iccid]}, {status}')
     else:
-        changeStatus(js[serialNumber], status)
+        changeStatus(js[serialNumber], status, cur)
     notifyChange()
+    db_connection.commit()
+    db_connection.close()
     return 'Hi, Mark'
 
 @app.route('/Signalling') #Страница для датчика двери
@@ -55,10 +58,6 @@ def outDB():
         res = ' '.join(map(str, res))
         db_connection.close()
         return res
-
-
-db_connection = sqlite3.connect('db/ecliptic.db')
-cur = db_connection.cursor()
 
 if __name__ == '__main__':
     app.run(port=8080, host='127.0.0.1')
